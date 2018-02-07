@@ -1,7 +1,16 @@
-﻿#include <ArduinoJson.h>
+﻿#include <ThreadController.h>
+#include <Thread.h>
+#include <StaticThreadController.h>
+#include <ArduinoJson.h>
 #include <TFT_eSPI.h>
+#define D0 16
 //Serial z bt leci po UART0, czyli tym samym do debugownia
 
+
+//time
+int hour = 0;
+int minute = 0;
+int second = 0;
 
 boolean isTriggerDown = false;
 boolean isConnected = false;
@@ -33,15 +42,20 @@ int lastZeros = 0;
 bool d = false;
 int count = 0;
 
+
+//future
+double coordinates;
+int publicKey;
+
 TFT_eSPI tft = TFT_eSPI();
 DynamicJsonBuffer incomingDataBuffer(512);
 void setup() {
 	Serial.begin(11520);
 
 	tft.init();
-
-	pinMode(PIN_D0, OUTPUT);
-	analogWrite(PIN_D0, 150);
+	
+	pinMode(D0, OUTPUT);
+	analogWrite(D0, 150);
 
 	tft.fillScreen(TFT_WHITE);
 	tft.setRotation(1);
@@ -61,6 +75,9 @@ void loop() {
 			burstAmount = data["burstValue"];
 			adjustRate = data["rate"];
 			rate = data["rateValue"];
+			hour = data["hour"];
+			minute = data["minute"];
+			second = data["second"];
 			batterySaver = data["batterySaver"];
 			isSmartTriggerOn = data["smartTrigger"];
 			boost = data["boost"];
